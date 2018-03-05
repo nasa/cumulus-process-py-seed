@@ -1,0 +1,32 @@
+{
+  "config": {
+    "buckets": {
+      "internal": "cumulus",
+      "private": "cumulus",
+      "public": "cumulus",
+      "protected": "cumulus"
+    },
+    "granuleIdExtraction": "(.*)",
+    "url_path": "testing/cumulus-modis",
+    "files_config": [
+      {
+        "regex": "^M.*\\.hdf$",
+        "bucket": "protected"
+      },
+      {
+        "regex": "^M.*\\.hdf.met$"
+      },
+      {
+        "regex": "^M.*\\.jpg$"
+      },
+      {
+        "regex": "^M.*\\.meta\\.xml$",
+        "bucket": "private"
+      }
+    ]
+  },
+  "input": [
+    "s3://cumulus/testdata/modis/MOD09GQ.A2017001.h11v04.006.2017014010124.hdf",
+    "s3://cumulus/testdata/modis/MOD09GQ.A2017001.h11v04.006.2017014010124.hdf.met"
+  ]
+}

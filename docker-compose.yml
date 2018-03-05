@@ -1,0 +1,52 @@
+version: '2'
+
+services:
+
+  base:
+    build:
+      context: .
+    image: cumuluss/myprocess
+    entrypoint: /bin/bash
+    env_file: .env
+    volumes:
+      - '.:/home/cumulus/work'
+
+  cumulus:
+    image: cumuluss/myprocess
+    env_file: .env
+    volumes:
+      - '.:/home/cumulus/work'
+
+  test:
+    image: cumuluss/myprocess
+    entrypoint: bash -c 'nosetests --with-coverage --cover-package cumulus_myprocess --cover-inclusive --with-timer -v -s;'
+    env_file: .env
+    volumes:
+      - './test:/home/cumulus/test'
+
+  package:
+    image: cumuluss/myprocess
+    entrypoint: lambda-package.sh
+    working_dir: /home/cumulus/work
+    volumes:
+      - '.:/home/cumulus/work'
+
+  testpackage:
+    image: 'developmentseed/geolambda:base'
+    entrypoint: bash -c "nosetests test -v -s";
+    working_dir: /home/cumulus
+    env_file: .env
+    environment:
+      - LD_LIBRARY_PATH=/home/cumulus/lambda/lib:$LD_LIBRARY_PATH
+      - PYTHONPATH=/home/cumulus/lambda/lib/python2.7/site-packages:$PYTHONPATH
+    volumes:
+      - './test:/home/cumulus/test'
+      - './lambda:/home/cumulus/lambda'
+
+  deploy:
+    image: 'cumuluss/myprocess'
+    entrypoint: ['deploy-to-s3.sh', 'cumulus-data-shared']
+    working_dir: /home/cumulus/work
+    env_file: .env
+    volumes:
+      - '.:/home/cumulus/work'

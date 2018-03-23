@@ -1,1 +1,1 @@
-cumulus-process==0.5.3
+cumulus-process==0.5.7

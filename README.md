@@ -40,12 +40,12 @@ At this time also rename the *project* folder to match the same name as your pro
 
 #### 2.  Write Process subclass (project/main.py)
 
-The Process subclass will be a class specific to the Processing of a new type of data. While any of the Process members can be overridden in this subclass, most users will only need provide two functions: the *input_keys* property function, and the *process* member function.
+The Process subclass will be a class specific to the Processing of a new type of data. While any of the Process members can be overridden in this subclass, most users will only need provide two functions: the *default_keys* property function, and the *process* member function.
 
-The *input_keys* property is a way to define which files are what so they can be referenced in the *process* function. For example:
+The *default_keys* property is a way to hard-code a default set of keys and file patterns to identify which files are what so they can be referenced in the *process* function. It is used as a fallback when the parent class *input_keys* property fails to retrieve keys from the cumulus message config because none exist. For example:
 ```
     @property
-    def input_keys(self):
+    def default_keys(self):
         return {
             'hdf': r"^.*hdf$",
             'thumbnail': r"^BROWSE.*hdf$",
@@ -167,8 +167,11 @@ Below are descriptions of the Process class member functions (included propertie
 ### Properties
 
 ##### Process.input_keys
-As described above, input_keys provides keys and file patterns so that files can be identified in the process function. This should always be overridden.
-Note: In Cumulus workflows regex patterns for the input files are included. The input_keys property could be written to retrieve these regex expressions from the Cumulus message, but this is rarely necessary. The regex expressions included in the Cumulus message are specific and used for validation. The regex patterns used in the process() function are simply for indentifying types of files and as such can be more general than the detailed regexes defined in the Cumulus workflow.
+As described above, input_keys provides keys and file patterns so that files can be identified in the process function. These will be retrieved from the Cumulus message, or default to default_keys when none exist there. This allows a generalised process to dynamically handle a wide range of file patterns, or simply use default_keys when this functionality is not needed.
+Note: In Cumulus workflows regex patterns for the input files are usually included, which are not the same as input keys. These regex expressions included in the Cumulus message are specific and used for validation. The regex patterns used in the process() function are simply for indentifying types of files and as such can be more general than the detailed regexes defined in the Cumulus workflow. An example of the difference is input file patterns for the collection, versus input_keys for a whole product family.
+
+##### Process.default_keys
+As described above, default_keys is meant to supply hard-coded keys and file patterns so that files can be identified in the process function. It is used as a fallback when no keys are specified in the Cumulus message config.
 
 ##### Process.gid
 The gid property returns the "Granule ID", based upon the input files. The default property tries to generate the GID using the following 3 methods, in order of preference:

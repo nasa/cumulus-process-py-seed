@@ -5,7 +5,7 @@ class MyProcess(Process):
     """ A MODIS Process """
 
     @property
-    def input_keys(self):
+    def default_keys(self):
         return {
             'hdf': r"^.*hdf$",
             'thumbnail': r"^BROWSE.*hdf$",
